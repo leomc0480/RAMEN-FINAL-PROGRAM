@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -43,7 +44,8 @@ public class Robot extends TimedRobot {
   boolean BButton;
   boolean XButton;
   boolean AButton;
-
+  double absoluteTimer;
+  double relativeTimer;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -92,7 +94,25 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+  m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+  class GetTimeAction{
+
+  
+    public void autoAbsoluteTimeControl(){
+      absoluteTimer = Timer.getFPGATimestamp();
+    }
+    public void autoRelativeTimeControl(){
+      relativeTimer = Timer.getFPGATimestamp();
+    }
+    public double getAbsoluteTimer(){
+      return absoluteTimer;
+    }
+    public double getRelativeTimer(){
+      return relativeTimer;
+    }
+  }
+    
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -102,7 +122,35 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+    if (relativeTimer > 2 && relativeTimer < 4){
+    Motor1FrontRight.set(ControlMode.PercentOutput,(1*0.795));
+    Motor2FrontLeft.set(ControlMode.PercentOutput,(-1));
+    Motor3BackRight.set(ControlMode.PercentOutput,(1*0.795));
+    Motor4BackLeft.set(ControlMode.PercentOutput,(-1));
+    }
+    else if (relativeTimer > 4 && relativeTimer < 7){
+    Motor6Hooks.set(ControlMode.PercentOutput, (0.2));
+      }
+    else if (relativeTimer > 7 && relativeTimer < 7.7){
+      Motor1FrontRight.set(ControlMode.PercentOutput,(-1*0.795));
+      Motor2FrontLeft.set(ControlMode.PercentOutput,(1));
+      Motor3BackRight.set(ControlMode.PercentOutput,(-1*0.795));
+      Motor4BackLeft.set(ControlMode.PercentOutput,(1));
+    }
+    else if (relativeTimer > 7.7 && relativeTimer < 15){
+      Motor5Intake.set(ControlMode.PercentOutput, (1));
+    }
+    else (relativeTimer > 15){
+      Motor1FrontRight.set(ControlMode.PercentOutput,(0));
+      Motor2FrontLeft.set(ControlMode.PercentOutput,(0));
+      Motor3BackRight.set(ControlMode.PercentOutput,(0));
+      Motor4BackLeft.set(ControlMode.PercentOutput,(0));
+      Motor5Intake.set(ControlMode.PercentOutput, (0));
+      Motor6Hooks.set(ControlMode.PercentOutput, (0));
+    }
+  }
 
   @Override
   public void teleopInit() {
@@ -143,7 +191,7 @@ public class Robot extends TimedRobot {
     // Intake
 // usamos if y else pero como el motor es de velocidades se setea la velocidad y no true o false
     if(YButton) Motor5Intake.set(ControlMode.PercentOutput, (1));
-    else if(BButton) Motor5Intake.set(ControlMode.PercentOutput, (-0.5));
+    else if(BButton) Motor5Intake.set(ControlMode.PercentOutput, (-0.6));
     else Motor5Intake.set(ControlMode.PercentOutput, (0.0000000)); 
 
 //Hooks
